@@ -53,7 +53,7 @@ class LoginHandler(tornado.web.RequestHandler):
 class WebSocket(tornado.websocket.WebSocketHandler):
 
     def open(self, id):
-        self.id = id
+        self.id = int(id)
 
     def on_message(self, message):
         """Evaluates the function pointed to by json-rpc."""
