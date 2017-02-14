@@ -36,7 +36,7 @@
                 <script type="text/javascript">
                     // Connect a websocket to the server. The port notation is post-
                     // processed server-side according to the config
-                    setTimeout(client.connect({{port}}, {{i}}), 1000 * {{i}});
+                    setTimeout(function() { client.connect({{port}}, {{i}}) }, 1000 * {{i}});
                 </script>
             {% end %}
         </div>
