@@ -103,7 +103,7 @@ if args.use_usb:
     from PIL import Image
     cameras = []
     for i in range(args.usb_count):
-        cameras += cv2.VideoCapture(i)
+        cameras.append(cv2.VideoCapture(i))
 else:
     import picamera
     cameras = [picamera.PiCamera()]
