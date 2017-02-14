@@ -27,19 +27,18 @@
                 </div>
             </div>
 
-            {% for i in range(cameras) %}
-                <div class="row">
-                    <div class="col-xs-12">
+            <div class="row">
+                {% for i in range(cameras) %}
+                    <div class="col-xs-6">
                         <img id="video{{i}}"></img>
                     </div>
-                </div>
-                <br>
-                <script type="text/javascript">
-                    // Connect a websocket to the server. The port notation is post-
-                    // processed server-side according to the config
-                    setTimeout(function() { client.connect({{port}}, {{i}}) }, 1000 * {{i}});
-                </script>
-            {% end %}
+                    <script type="text/javascript">
+                        // Connect a websocket to the server. The port notation is post-
+                        // processed server-side according to the config
+                        setTimeout(function() { client.connect({{port}}, {{i}}) }, 1000 * {{i}});
+                    </script>
+                {% end %}
+            </div>
         </div>
     </body>
 </html>
