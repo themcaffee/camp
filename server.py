@@ -102,7 +102,7 @@ if args.use_usb:
     import cv2
     from PIL import Image
     cameras = []
-    for i in args.usb_count:
+    for i in range(args.usb_count):
         cameras += cv2.VideoCapture(args.usb_count)
 else:
     import picamera
@@ -113,7 +113,7 @@ resolutions = {"high": (1280, 720), "medium": (640, 480), "low": (320, 240)}
 if args.resolution in resolutions:
     if args.use_usb:
         w, h = resolutions[args.resolution]
-        for i in args.usb_count:
+        for i in range(args.usb_count):
             cameras[i].set(3, w)
             cameras[i].set(4, h)
     else:
