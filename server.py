@@ -32,7 +32,7 @@ class IndexHandler(tornado.web.RequestHandler):
         if args.require_login and not self.get_secure_cookie(COOKIE_NAME):
             self.redirect("/login")
         else:
-            self.render("index.html", port=args.port)
+            self.render("index.html", port=args.port, cameras=args.usb_count)
 
 
 class LoginHandler(tornado.web.RequestHandler):
@@ -52,6 +52,9 @@ class LoginHandler(tornado.web.RequestHandler):
 
 class WebSocket(tornado.websocket.WebSocketHandler):
 
+    def open(self, id):
+        self.id = id
+
     def on_message(self, message):
         """Evaluates the function pointed to by json-rpc."""
 
@@ -69,11 +72,11 @@ class WebSocket(tornado.websocket.WebSocketHandler):
         sio = io.StringIO()
 
         if args.use_usb:
-            _, frame = camera.read()
+            _, frame = cameras[self.id].read()
             img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             img.save(sio, "JPEG")
         else:
-            camera.capture(sio, "jpeg", use_video_port=True)
+            cameras[0].capture(sio, "jpeg", use_video_port=True)
 
         try:
             self.write_message(base64.b64encode(sio.getvalue()))
@@ -91,27 +94,30 @@ parser.add_argument("--require-login", action="store_true", help="Require "
                     "a password to log in to webserver.")
 parser.add_argument("--use-usb", action="store_true", help="Use a USB "
                     "webcam instead of the standard Pi camera.")
-parser.add_argument("--usb-id", type=int, default=0, help="The "
-                     "usb camera number to display")
+parser.add_argument("--usb-count", type=int, default=1, help="The "
+                    "number of usb cameras")
 args = parser.parse_args()
 
 if args.use_usb:
     import cv2
     from PIL import Image
-    camera = cv2.VideoCapture(args.usb_id)
+    cameras = []
+    for i in args.usb_count:
+        cameras += cv2.VideoCapture(args.usb_count)
 else:
     import picamera
-    camera = picamera.PiCamera()
-    camera.start_preview()
+    cameras = [picamera.PiCamera()]
+    cameras[0].start_preview()
 
 resolutions = {"high": (1280, 720), "medium": (640, 480), "low": (320, 240)}
 if args.resolution in resolutions:
     if args.use_usb:
         w, h = resolutions[args.resolution]
-        camera.set(3, w)
-        camera.set(4, h)
+        for i in args.usb_count:
+            cameras[i].set(3, w)
+            cameras[i].set(4, h)
     else:
-        camera.resolution = resolutions[args.resolution]
+        cameras[0].resolution = resolutions[args.resolution]
 else:
     raise Exception("%s not in resolution options." % args.resolution)
 

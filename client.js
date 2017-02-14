@@ -7,10 +7,10 @@
 var client = {
 
     // Connects to Pi via websocket
-    connect: function (port) {
-        var self = this, video = document.getElementById("video");
+    connect: function (port, id) {
+        var self = this, video = document.getElementById("video" + id);
 
-        this.socket = new WebSocket("ws://" + window.location.hostname + ":" + port + "/websocket");
+        this.socket = new WebSocket("ws://" + window.location.hostname + ":" + port + "/websocket?id=" + id);
 
         // Request the video stream once connected
         this.socket.onopen = function () {
