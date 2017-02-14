@@ -14,7 +14,8 @@ var client = {
 
         // Request the video stream once connected
         this.socket.onopen = function () {
-            console.log("Connected!");
+            console.log("Connected" + self.id + "!");
+            console.log(self.socket)
             self.readCamera();
         };
 
